@@ -8,8 +8,8 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /product-data-search
+RUN go build -o /dropIt
 
 EXPOSE 8080
 
-CMD ["/product-data-search"]
+CMD ["/dropIt"]

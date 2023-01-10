@@ -80,7 +80,7 @@ func createCookie(token string, c *gin.Context) {
 	c.SetCookie("AuthenticationCookie", token, 60*60*48, "", "", false, true)
 }
 
-func isAuthorized(c *gin.Context) {
+/*func isAuthorized(c *gin.Context) {
 	cookie, err := c.Request.Cookie("AuthenticationCookie")
 	if err != nil {
 		if err == http.ErrNoCookie {
@@ -103,4 +103,4 @@ func isAuthorized(c *gin.Context) {
 	if token.Valid {
 		c.Redirect(http.StatusOK, "/userpage")
 	}
-}
+}*/

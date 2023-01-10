@@ -30,6 +30,7 @@ func reinforstJSON(c *gin.Context) {
 
 	file, _ := json.MarshalIndent(string(responseData), "", " ")
 	_ = os.WriteFile("data.json", file, 0644)
+	c.Redirect(http.StatusMovedPermanently, "/userpage")
 
 }
 
@@ -46,7 +47,7 @@ func reinforstCSV(c *gin.Context) {
 		log.Println(err)
 	}
 	fmt.Println(string(responseData))
-
+	c.Redirect(http.StatusMovedPermanently, "/userpage")
 }
 
 // uses Axesso API to get ASINs from keyword search
@@ -74,6 +75,8 @@ func searchResult(c *gin.Context) {
 
 	file1, _ := json.Marshal(string(body))
 	_ = os.WriteFile("data1.json", file1, 0644)
+
+	c.Redirect(http.StatusMovedPermanently, "/userpage")
 
 }
 

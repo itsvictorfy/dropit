@@ -1,0 +1,18 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: admin
+      MARIADB_DATABASE: userdDB
+      MARIADB_USER: admin
+      MARIADB_PASSWORD: admin
+    ports:
+      - 3306:3306
+  
+  dropit:
+    image: itsvictorfy/dropit:latest
+    restart: always
+    ports:
+      - 8080:8080
+    

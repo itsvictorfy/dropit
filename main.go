@@ -63,19 +63,19 @@ func main() {
 		User:                 "root",
 		Passwd:               "admin",
 		Net:                  "tcp",
-		Addr:                 "0.0.0.0:3306",
+		Addr:                 "127.0.0.1:3306",
 		DBName:               "userdDB",
 		AllowNativePasswords: true,
 	}
 	var err error
 	usersDb, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	pingErr := usersDb.Ping()
 	if pingErr != nil {
-		log.Fatal(pingErr)
+		log.Println(pingErr)
 	}
 
 	var version string
