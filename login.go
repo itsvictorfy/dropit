@@ -35,7 +35,7 @@ func loginVerification(loginEmail, loginPass string) (string, error) {
 	var idFromDB ksuid.KSUID
 	var roleFromDB string
 	var validToken string
-	err := usersDb.QueryRow("SELECT Passw, URole, Secret_Key FROM `AmazonMarketUsersDB` WHERE (Email= ? );", loginEmail).Scan(&passFromDB, &roleFromDB, &idFromDB)
+	err := usersDb.QueryRow("SELECT Passw, URole, Secret_Key FROM `DropItUsersDB` WHERE (Email= ? );", loginEmail).Scan(&passFromDB, &roleFromDB, &idFromDB)
 	fmt.Printf("idFromDB : %s \n", idFromDB)
 	fmt.Printf("roleFromDB : %s \n", roleFromDB)
 	fmt.Printf("passFromDB : %s \n", passFromDB)

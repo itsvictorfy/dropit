@@ -33,7 +33,7 @@ func register(c *gin.Context) {
 }
 
 func insertToDB(p user) error {
-	query := "INSERT INTO AmazonMarketUsersDB(Email, First_Name,Last_Name,PassW, Secret_Key,URole, Creation_Date, Is_Verified ) VALUES (?, ?, ?, ?, ?, ?, ?, ? )"
+	query := "INSERT INTO DropItUsersDB(Email, First_Name,Last_Name,PassW, Secret_Key,URole, Creation_Date, Is_Verified ) VALUES (?, ?, ?, ?, ?, ?, ?, ? )"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := usersDb.PrepareContext(ctx, query)
