@@ -41,12 +41,19 @@ var usersDb *sql.DB
 
 // handle root directory
 func homePage(c *gin.Context) {
+	//fmt.Println(c.Request.Cookie("AuthenticationCookie"))
+	//if isAuthorized(c) {
+	//c.Redirect(http.StatusMovedPermanently, "/userpage")
+	//} else {
 	c.HTML(http.StatusOK, "HomePage.html", nil)
-	c.SetCookie("lastTimeentered", time.Now().String(), 60*60*48, "", "", false, true)
-	fmt.Println(c.Request.Cookie("AuthenticationCookie"))
-	//isAuthorized(c)
+	//}
 }
 func userpage(c *gin.Context) {
+	//fmt.Println("\n  cookie:")
+	//fmt.Println(c.Request.Cookie("AuthenticationCookie"))
+	//if !isAuthorized(c) {
+	//c.Redirect(http.StatusMovedPermanently, "/")
+	//}
 	c.HTML(http.StatusOK, "userpage.html", nil)
 }
 
@@ -54,7 +61,7 @@ func registerPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "register.html", nil)
 }
 func logout(c *gin.Context) {
-	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false)
+	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false) //cant delete the fucking cookie
 	c.Redirect(http.StatusMovedPermanently, "/")
 }
 
@@ -63,7 +70,6 @@ func main() {
 		User:                 "root",
 		Passwd:               "admin",
 		Net:                  "tcp",
-		Addr:                 "127.0.0.1:3306",
 		DBName:               "userdDB",
 		AllowNativePasswords: true,
 	}
@@ -91,11 +97,11 @@ func main() {
 	})
 
 	router.GET("/", homePage)
-	router.GET("/login", login)
+	//router.GET("/login", login)
 	router.GET("/logout", logout)
 	router.GET("/userpage", userpage)
 	router.POST("/regaval", register)
-	router.POST("/loginevr", login)
+	router.POST("/loginver", login)
 	router.GET("/register", registerPage)
 
 	apiReq := router.Group("/apireq")

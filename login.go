@@ -14,19 +14,18 @@ import (
 func login(c *gin.Context) {
 	loginEmail := c.PostForm("loginEmail")
 	loginPass := c.PostForm("loginPass")
-	fmt.Printf("loginEmail : %s \n", loginEmail)
-	fmt.Printf("LoginPass : %s \n", loginPass)
 	token, err := loginVerification(loginEmail, loginPass)
 	if err != nil {
 		log.Panicf("Incorrect User/Password %s", err.Error())
-		c.Redirect(http.StatusMovedPermanently, "/error")
+		c.Redirect(http.StatusMovedPermanently, "/")
 	} else {
+		log.Printf("Login success ")
 		createCookie(token, c)
-		c.Redirect(http.StatusMovedPermanently, "/userpage")
+		usersDb.Query("update DropItUsersDB set Last_login = ?  WHERE Email = ?;", time.Now().String(), loginEmail)
 		fmt.Println("\n Login Succes coockie:")
 		fmt.Println(c.Request.Cookie("AuthenticationCookie"))
+		c.Redirect(http.StatusMovedPermanently, "/userpage")
 
-		fmt.Println(c.Request.Cookie("AuthenticationCookie"))
 	}
 }
 
@@ -36,20 +35,17 @@ func loginVerification(loginEmail, loginPass string) (string, error) {
 	var roleFromDB string
 	var validToken string
 	err := usersDb.QueryRow("SELECT Passw, URole, Secret_Key FROM `DropItUsersDB` WHERE (Email= ? );", loginEmail).Scan(&passFromDB, &roleFromDB, &idFromDB)
-	fmt.Printf("idFromDB : %s \n", idFromDB)
-	fmt.Printf("roleFromDB : %s \n", roleFromDB)
-	fmt.Printf("passFromDB : %s \n", passFromDB)
-
-	fmt.Println(err)
+	if err != nil {
+		log.Println("error getting DB Data")
+	}
 	if err != nil {
 		log.Panicln("no such user")
-
 	}
 	if loginPass != passFromDB {
 		log.Println("password is incorrect")
+		return "", err
 	} else {
 		validToken, err = generateJWT(loginEmail, idFromDB, roleFromDB)
-		fmt.Printf("validtoke= %s", validToken)
 		if err != nil {
 			log.Panicln("Error with creating Token")
 			return "", err
@@ -80,27 +76,48 @@ func createCookie(token string, c *gin.Context) {
 	c.SetCookie("AuthenticationCookie", token, 60*60*48, "", "", false, true)
 }
 
-/*func isAuthorized(c *gin.Context) {
+/*func isAuthorized(c *gin.Context) bool {
 	cookie, err := c.Request.Cookie("AuthenticationCookie")
 	if err != nil {
-		if err == http.ErrNoCookie {
-			c.Redirect(http.StatusUnauthorized, "/error")
-		}
-		c.Redirect(http.StatusBadRequest, "/error")
+		log.Printf("No cookie Found")
+		return false
 	}
 	token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		if _, err := token.Method.(*jwt.SigningMethodHMAC); !err {
 			return nil, fmt.Errorf("something went wrong")
 		}
 		return secretkey, nil
 	})
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			c.Redirect(http.StatusUnauthorized, "/error")
-		}
-		c.Redirect(http.StatusBadRequest, "/error")
+		log.Printf("cant parse Token")
+		return false
 	}
-	if token.Valid {
-		c.Redirect(http.StatusOK, "/userpage")
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		log.Printf("cant map claims ")
+		return false
 	}
-}*/
+	idFromCookie, ok := claims["id"].(string)
+	if !ok {
+		log.Printf("cant claim id from Cookie")
+		return false
+	}
+	emailFromCookie, ok := claims["email"].(string)
+	if !ok {
+		log.Printf("cant claim email from Cookie")
+		return false
+	}
+	var idFromDb string
+	errs := usersDb.QueryRow("SELECT Secret_Key FROM `DropItUsersDB` WHERE (Email= ? );", emailFromCookie).Scan(&idFromDb)
+	if errs != nil {
+		log.Println("error getting DB Data")
+		return false
+	}
+	if idFromDb != idFromCookie {
+		log.Printf("Cookie ID != DB ID")
+		return false
+	}
+	log.Printf("is Authorized")
+	return true
+}
+*/
