@@ -93,7 +93,7 @@ func main() {
 	})
 
 	router.GET("/", homePage)
-	//router.GET("/login", login)
+	router.GET("/homepage", homePage)
 	router.GET("/logout", logout)
 	router.GET("/userpage", userpage)
 	router.POST("/regaval", register)

@@ -76,6 +76,7 @@ func createCookie(token string, c *gin.Context) {
 	c.SetCookie("AuthenticationCookie", token, 60*60*48, "", "", false, true)
 }
 
+// check if coocie legit
 func isAuthorized(c *gin.Context) bool {
 	cookie, err := c.Request.Cookie("AuthenticationCookie")
 	if err != nil {

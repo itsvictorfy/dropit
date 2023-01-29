@@ -11,6 +11,7 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
+// format data
 func register(c *gin.Context) {
 	var newuser user
 	newuser.FName = c.PostForm("regFName")

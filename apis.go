@@ -69,7 +69,7 @@ func searchResult(c *gin.Context) {
 
 	fmt.Println(res)
 	fmt.Println(string(body))
-	//unable to write formated data to file - Please help See data,data1.json files
+	//unable to write formated data to file - Please help See data, ata1.json files
 	file, _ := json.Marshal(body)
 	_ = os.WriteFile("data.json", file, 0644)
 

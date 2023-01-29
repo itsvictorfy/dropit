@@ -14,7 +14,6 @@ services:
     healthcheck:
       test: mysqladmin -padmin ping -h localhost
       interval: 20s
-      start_period: 10s
       timeout: 10s
       retries: 3
 
