@@ -41,19 +41,14 @@ var usersDb *sql.DB
 
 // handle root directory
 func homePage(c *gin.Context) {
-	//fmt.Println(c.Request.Cookie("AuthenticationCookie"))
-	//if isAuthorized(c) {
-	//c.Redirect(http.StatusMovedPermanently, "/userpage")
-	//} else {
-	c.HTML(http.StatusOK, "HomePage.html", nil)
-	//}
+	fmt.Println(c.Request.Cookie("AuthenticationCookie"))
+	if isAuthorized(c) {
+		c.Redirect(http.StatusMovedPermanently, "/userpage")
+	} else {
+		c.HTML(http.StatusOK, "HomePage.html", nil)
+	}
 }
 func userpage(c *gin.Context) {
-	//fmt.Println("\n  cookie:")
-	//fmt.Println(c.Request.Cookie("AuthenticationCookie"))
-	//if !isAuthorized(c) {
-	//c.Redirect(http.StatusMovedPermanently, "/")
-	//}
 	c.HTML(http.StatusOK, "userpage.html", nil)
 }
 
@@ -70,6 +65,7 @@ func main() {
 		User:                 "root",
 		Passwd:               "admin",
 		Net:                  "tcp",
+		Addr:                 "userDB",
 		DBName:               "userdDB",
 		AllowNativePasswords: true,
 	}
@@ -111,7 +107,6 @@ func main() {
 		apiReq.POST("/search", searchResult) //using Axesso API for ASIN numbers from search results by Keyboard to JSON
 	}
 	router.Run() // listen and serve on 0.0.0.0:8080
-	fmt.Println(ksuid.New())
 }
 
 /*
@@ -119,4 +114,17 @@ IDEAS:
 -monitoring all logs with Elsatic Search and represent number of issues / requests
 -Side Quest : calculate Formula 1 pottential winning round for driver if possible
 -side quest Email verefication API
+
+CREATE TABLE IF NOT EXISTS dropitusersdb(
+    Secret_Key VARCHAR(255) NOT NULL,
+	URole VARCHAR(255) NOT NULL,
+	Email VARCHAR (255) NOT NULL,
+	Passw VARCHAR (255) NOT NULL,
+	First_Name VARCHAR (255) NOT NULL,
+	Last_Name VARCHAR (255) NOT NULL,
+	LastSearch VARCHAR (255) NULL,
+	LastLogin DATE NULL,
+	Is_Verified BOOLEAN NOT NULL,
+	Creation_Date DATE NOT NULL
+) COMMENT '';
 */

@@ -21,7 +21,7 @@ func login(c *gin.Context) {
 	} else {
 		log.Printf("Login success ")
 		createCookie(token, c)
-		usersDb.Query("update DropItUsersDB set Last_login = ?  WHERE Email = ?;", time.Now().String(), loginEmail)
+		usersDb.Query("update DropItUsersDB set LastLogin = ?  WHERE Email = ?;", time.Now(), loginEmail)
 		fmt.Println("\n Login Succes coockie:")
 		fmt.Println(c.Request.Cookie("AuthenticationCookie"))
 		c.Redirect(http.StatusMovedPermanently, "/userpage")
@@ -76,7 +76,7 @@ func createCookie(token string, c *gin.Context) {
 	c.SetCookie("AuthenticationCookie", token, 60*60*48, "", "", false, true)
 }
 
-/*func isAuthorized(c *gin.Context) bool {
+func isAuthorized(c *gin.Context) bool {
 	cookie, err := c.Request.Cookie("AuthenticationCookie")
 	if err != nil {
 		log.Printf("No cookie Found")
@@ -120,4 +120,3 @@ func createCookie(token string, c *gin.Context) {
 	log.Printf("is Authorized")
 	return true
 }
-*/

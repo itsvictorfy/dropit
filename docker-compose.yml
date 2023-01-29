@@ -1,9 +1,7 @@
 services:
   mariadb:
     image: mariadb:latest
-    restart: always
-    networks:
-      - backend
+    container_name: userDB
     environment:
       MARIADB_ROOT_PASSWORD: admin
       MARIADB_DATABASE: userdDB
@@ -12,14 +10,14 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - /var/lib/docker/volumes/da2c6f0bc2dc27271b500a2f6c7a2171e3ed4aa0808459b2c714a2a0ee9fc9b9/_data
+      - dropit:/app/sql
 
-  
   dropit:
-    image: itsvictorfy/dropit:latest
+    image: dropit:latest
+    container_name: dropit
     restart: always
-    networks:
-      - backend
+    build:
+      dockerfile: dockerfile
     links: 
       - "mariadb:userdDB"
     depends_on:
@@ -28,6 +26,5 @@ services:
     ports:
       - 8080:8080
 
-networks:
-  backend:
-    driver: bridge
+volumes:
+  dropit:
