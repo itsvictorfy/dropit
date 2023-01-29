@@ -10,7 +10,13 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - dropit:/app/sql
+      - /var/lib/docker/volumes/ee0c33fcb01be9edfb07ad5c8e2262250940ea410fdb69ff8e928ab6ef8ddb54/_data
+    healthcheck:
+      test: mysqladmin -padmin ping -h localhost
+      interval: 20s
+      start_period: 10s
+      timeout: 10s
+      retries: 3
 
   dropit:
     image: dropit:latest
@@ -22,9 +28,6 @@ services:
       - "mariadb:userdDB"
     depends_on:
       mariadb:
-        condition: service_started
+        condition: service_healthy
     ports:
       - 8080:8080
-
-volumes:
-  dropit:
