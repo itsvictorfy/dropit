@@ -6,8 +6,8 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY tableconfig.sql /app/sql
-COPY . .
+COPY *.go .
+COPY pages/ ./pages
 
 RUN go build -o /dropIt
 

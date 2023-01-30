@@ -2,6 +2,8 @@ services:
   mariadb:
     image: mariadb:latest
     container_name: userDB
+    build: 
+      dockerfile: db.dockerfile
     environment:
       MARIADB_ROOT_PASSWORD: admin
       MARIADB_DATABASE: userdDB
@@ -10,13 +12,14 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - /var/lib/docker/volumes/ee0c33fcb01be9edfb07ad5c8e2262250940ea410fdb69ff8e928ab6ef8ddb54/_data
+      - ./DataBases:/docker-entrypoint-initdb.d
     healthcheck:
       test: mysqladmin -padmin ping -h localhost
       interval: 20s
       start_period: 10s
       timeout: 10s
       retries: 3
+    
 
   dropit:
     image: dropit:latest
