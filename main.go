@@ -41,23 +41,34 @@ var usersDb *sql.DB
 
 // handle root directory
 func homePage(c *gin.Context) {
-	fmt.Println(c.Request.Cookie("AuthenticationCookie"))
-	if isAuthorized(c) {
-		c.Redirect(http.StatusMovedPermanently, "/userpage")
-	} else {
+	if !isAuthorized(c) {
 		c.HTML(http.StatusOK, "HomePage.html", nil)
+	} else {
+		c.Redirect(http.StatusMovedPermanently, "/userpage")
 	}
 }
 func userpage(c *gin.Context) {
-	c.HTML(http.StatusOK, "userpage.html", nil)
+	if !isAuthorized(c) {
+		c.Redirect(http.StatusMovedPermanently, "/")
+	} else {
+		c.HTML(http.StatusOK, "userpage.html", nil)
+	}
 }
 
 func registerPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "register.html", nil)
+	if !isAuthorized(c) {
+		c.HTML(http.StatusOK, "register.html", nil)
+	} else {
+		c.Redirect(http.StatusMovedPermanently, "/userpage")
+	}
 }
 func logout(c *gin.Context) {
 	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false) //cant delete the fucking cookie
 	c.Redirect(http.StatusMovedPermanently, "/")
+}
+
+func getCookie(c *gin.Context) {
+	fmt.Println(c.Request.Cookie("AuthenticationCookie"))
 }
 
 func main() {
@@ -92,19 +103,20 @@ func main() {
 		})
 	})
 
-	router.GET("/", homePage)
-	//router.GET("/login", login)
-	router.GET("/logout", logout)
-	router.GET("/userpage", userpage)
-	router.POST("/regaval", register)
-	router.POST("/loginver", login)
-	router.GET("/register", registerPage)
+	router.GET("/", homePage)             //home page (no cookie)
+	router.GET("/logout", logout)         // handles logout (delete cookie)
+	router.GET("/userpage", userpage)     // home page ( with cookie)
+	router.POST("/regaval", register)     // handles registration
+	router.POST("/loginver", login)       //handles login
+	router.GET("/register", registerPage) //register page
+	router.GET("/cookie", getCookie)      //check cookie
 
 	apiReq := router.Group("/apireq")
 	{
 		apiReq.GET("/csv", reinforstCSV)     //using Rainforst API for spesific Amazon product data to CSV
 		apiReq.GET("/json", reinforstJSON)   //using Rainforest API for spesific Amazon Product data to JSON
 		apiReq.POST("/search", searchResult) //using Axesso API for ASIN numbers from search results by Keyboard to JSON
+		apiReq.GET("/newapi", newapi)
 	}
 	router.Run() // listen and serve on 0.0.0.0:8080
 }

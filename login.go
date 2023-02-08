@@ -16,16 +16,15 @@ func login(c *gin.Context) {
 	loginPass := c.PostForm("loginPass")
 	token, err := loginVerification(loginEmail, loginPass)
 	if err != nil {
-		log.Panicf("Incorrect User/Password %s", err.Error())
+		log.Printf("Incorrect User/Password %s", err.Error())
 		c.Redirect(http.StatusMovedPermanently, "/")
 	} else {
 		log.Printf("Login success ")
 		createCookie(token, c)
 		usersDb.Query("update DropItUsersDB set LastLogin = ?  WHERE Email = ?;", time.Now(), loginEmail)
-		fmt.Println("\n Login Succes coockie:")
+		fmt.Printf("\n Login Succes coockie:")
 		fmt.Println(c.Request.Cookie("AuthenticationCookie"))
 		c.Redirect(http.StatusMovedPermanently, "/userpage")
-
 	}
 }
 
@@ -36,18 +35,16 @@ func loginVerification(loginEmail, loginPass string) (string, error) {
 	var validToken string
 	err := usersDb.QueryRow("SELECT Passw, URole, Secret_Key FROM `DropItUsersDB` WHERE (Email= ? );", loginEmail).Scan(&passFromDB, &roleFromDB, &idFromDB)
 	if err != nil {
-		log.Println("error getting DB Data")
-	}
-	if err != nil {
-		log.Panicln("no such user")
+		log.Printf("no such user")
+		return "", err
 	}
 	if loginPass != passFromDB {
-		log.Println("password is incorrect")
+		log.Printf("password is incorrect")
 		return "", err
 	} else {
 		validToken, err = generateJWT(loginEmail, idFromDB, roleFromDB)
 		if err != nil {
-			log.Panicln("Error with creating Token")
+			log.Printf("Error with creating Token")
 			return "", err
 		}
 	}
@@ -110,7 +107,7 @@ func isAuthorized(c *gin.Context) bool {
 	var idFromDb string
 	errs := usersDb.QueryRow("SELECT Secret_Key FROM `DropItUsersDB` WHERE (Email= ? );", emailFromCookie).Scan(&idFromDb)
 	if errs != nil {
-		log.Println("error getting DB Data")
+		log.Printf("error getting DB Data")
 		return false
 	}
 	if idFromDb != idFromCookie {

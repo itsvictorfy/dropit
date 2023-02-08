@@ -14,23 +14,28 @@ import (
 
 // use Rainforest API to get Product Data to Json
 func reinforstJSON(c *gin.Context) {
-	response, err := http.Get("https://api.rainforestapi.com/request?api_key=63FFD605C840421D9F5FC4433C106F90&amazon_domain=amazon.com&asin=B08P4WR6XB&type=product&output=json")
+	//url := editQueryParmReinforst(c)
+	//response, err := http.NewRequest("GET", url, nil)
 
+	response, err := http.Get("https://api.rainforestapi.com/request?api_key=63FFD605C840421D9F5FC4433C106F90&amazon_domain=amazon.com&asin=B08P4WR6XB&type=product&output=json")
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)
 	}
-
+	defer response.Body.Close()
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		log.Printf("cant read data")
 	}
-	fmt.Println(string(responseData))
-	fmt.Println(response)
+	newProduct := getNewProduct()
 
-	file, _ := json.MarshalIndent(string(responseData), "", " ")
+	if err := json.Unmarshal(responseData, &newProduct); err != nil {
+		fmt.Printf("cant unmarshal JSON")
+	}
+	file, _ := json.MarshalIndent(newProduct, "", " ")
+
 	_ = os.WriteFile("data.json", file, 0644)
-	c.Redirect(http.StatusMovedPermanently, "/userpage")
 
 }
 
@@ -95,3 +100,56 @@ func editQueryParm(c *gin.Context) string {
 	fmt.Print(url)
 	return string(url.String())
 }
+func newapi(c *gin.Context) {
+	url := "https://digital-canary-pricejson-v1.p.rapidapi.com/"
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("X-RapidAPI-Key", "fa931de48dmshdfc1a4a261c7e1cp129019jsn7f650c68afb5")
+	req.Header.Add("X-RapidAPI-Host", "digital-canary-pricejson-v1.p.rapidapi.com")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+
+	fmt.Println(res)
+	fmt.Println(string(body))
+}
+
+/*func newapi(c *gin.Context) {
+	url := "https://amazon-product-reviews-keywords.p.rapidapi.com/product/search?keyword=iphone&country=US&category=aps"
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("X-RapidAPI-Key", "fa931de48dmshdfc1a4a261c7e1cp129019jsn7f650c68afb5")
+	req.Header.Add("X-RapidAPI-Host", "amazon-product-reviews-keywords.p.rapidapi.com")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println(err)
+	}
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+
+	fmt.Println(res)
+	fmt.Println(string(body))
+}
+
+func editQueryParmReinforst(c *gin.Context) string {
+	url, err := url.Parse("https://api.rainforestapi.com/request?api_key=63FFD605C840421D9F5FC4433C106F90&amazon_domain=amazon.com&asin=B08P4WR6XB&type=product&output=json")
+	if err != nil {
+		log.Println(err)
+	}
+
+	values := url.Query()
+	asin := c.PostForm("asin")
+	values.Set("asin", asin)
+
+	url.RawQuery = values.Encode()
+	fmt.Print(url)
+	return string(url.String())
+}*/
