@@ -20,6 +20,6 @@ jobs:
         DOCKER_PASS: ${{secrets.DOCKER_PASS}}
       run: docker login -u $DOCKER_USER -p $DOCKER_PASS
     - name: Build the Docker image
-      run: docker build . --tag my-image-name:$(date +%s)
+      run: docker build . --tag itsvictory/dropit:$(date +%s)
     - name: Push Docker Image
-      run: docker push ${{secrets.DOCKER_USER}}/dropit:$(date +%s)
+      run: docker push ${{secrets.DOCKER_USER}}/dropit
