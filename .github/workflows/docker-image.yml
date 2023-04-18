@@ -15,4 +15,5 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker compose up
+      run: docker build . --tag dripit:$(date +%s)
+      run: docker push itsvictorfy/dropit:v0.08
