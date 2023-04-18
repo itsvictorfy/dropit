@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: BulldnPushDocker
 
 on:
   push:
@@ -22,4 +22,4 @@ jobs:
     - name: Build the Docker image
       run: docker build . --tag my-image-name:$(date +%s)
     - name: Push Docker Image
-      run: docker push . ${{secrets.DOCKER_USER}}/$(date +%s)
+      run: docker push . ${{secrets.DOCKER_USER}}/dropit:$(date +%s)
