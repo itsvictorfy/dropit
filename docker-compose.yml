@@ -1,6 +1,6 @@
 services:
   mariadb:
-    image: mariadb:latest
+    image: mariadb
     container_name: userDB
     build: 
       dockerfile: db.dockerfile
