@@ -22,4 +22,6 @@ jobs:
     - name: Build the Docker image
       run: docker build . --tag my-image-name:$(date +%s)
     - name: Push Docker Image
-      run: docker push . ${{secrets.DOCKER_USER}}/dropit:$(date +%s)
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+      run: docker push . ${{DOCKER_USER}}/dropit:$(date +%s)
