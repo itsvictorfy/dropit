@@ -14,5 +14,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Docker Login
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASS: ${{secrets.DOCKER_PASS}}
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASS
     - name: Build the Docker image
       run: docker build . --tag my-image-name:$(date +%s)
+    - name: Push Docker Image
+      run: docker push . ${{secrets.DOCKER_USER}}/dropit
