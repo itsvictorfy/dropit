@@ -60,7 +60,7 @@ func userpage(c *gin.Context) {
 	if !isAuthorized(c) {
 		c.Redirect(http.StatusMovedPermanently, "/")
 	} else {
-		c.HTML(http.StatusOK, "userpage.html", nil)
+		c.HTML(http.StatusOK, "user_page.html", nil)
 	}
 }
 
