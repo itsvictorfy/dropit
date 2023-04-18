@@ -19,7 +19,11 @@ jobs:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
         DOCKER_PASS: ${{secrets.DOCKER_PASS}}
       run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-    - name: Build the Docker image
+    - name: Build DropIT_App Docker image
       run: docker build . --tag itsvictorfy/dropit:latest
-    - name: Push Docker Image
+    - name: Push DropIT_App Docker Image
       run: docker push itsvictorfy/dropit
+    - name: Build DropIT_Users_DB Docker image
+      run: docker build . --file db.dockerfile --tag itsvictorfy/dropitusersdb:latest
+    - name: Push DropIT_Users_DB Docker Image
+      run: docker push itsvictorfy/dropitusersdb
