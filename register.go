@@ -13,10 +13,10 @@ import (
 
 func register(c *gin.Context) {
 	var newuser user
-	newuser.FName = c.PostForm("regFName")
-	newuser.LName = c.PostForm("regLName")
-	newuser.Email = c.PostForm("regEmail")
-	newuser.Pass = c.PostForm("regPass")
+	newuser.FName = c.PostForm("register_first_name")
+	newuser.LName = c.PostForm("register_last_name")
+	newuser.Email = c.PostForm("register_email")
+	newuser.Pass = c.PostForm("register_password")
 	newuser.SecretKey = ksuid.New()
 	newuser.Verified = false
 	newuser.Role = "user"
@@ -26,7 +26,7 @@ func register(c *gin.Context) {
 	if err != nil {
 		c.Redirect(http.StatusMovedPermanently, "/register")
 	} else {
-		c.Redirect(http.StatusMovedPermanently, "/userpage")
+		c.Redirect(http.StatusMovedPermanently, "/auth/userpage")
 
 	}
 

@@ -7,7 +7,7 @@ COPY go.sum ./
 RUN go mod download
 
 COPY *.go .
-COPY pages/ ./pages
+COPY templates/* ./templates
 
 RUN go build -o /dropIt
 

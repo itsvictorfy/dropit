@@ -11,20 +11,19 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-func login(c *gin.Context) {
-	loginEmail := c.PostForm("loginEmail")
-	loginPass := c.PostForm("loginPass")
+func login_auth(c *gin.Context) {
+	loginEmail := c.PostForm("login_email")
+	loginPass := c.PostForm("login_password")
 	token, err := loginVerification(loginEmail, loginPass)
 	if err != nil {
-		log.Printf("Incorrect User/Password %s", err.Error())
+		log.Printf("Incorrect User/Password %s \n", err.Error())
 		c.Redirect(http.StatusMovedPermanently, "/")
 	} else {
-		log.Printf("Login success ")
+		log.Printf("Login success for %s \n", loginEmail)
 		createCookie(token, c)
 		usersDb.Query("update DropItUsersDB set LastLogin = ?  WHERE Email = ?;", time.Now(), loginEmail)
-		fmt.Printf("\n Login Succes coockie:")
-		fmt.Println(c.Request.Cookie("AuthenticationCookie"))
-		c.Redirect(http.StatusMovedPermanently, "/userpage")
+		log.Printf("DB Update last login for %s to %s", loginEmail, time.Now())
+		c.Redirect(http.StatusMovedPermanently, "/auth/userpage")
 	}
 }
 
@@ -35,11 +34,11 @@ func loginVerification(loginEmail, loginPass string) (string, error) {
 	var validToken string
 	err := usersDb.QueryRow("SELECT Passw, URole, Secret_Key FROM `DropItUsersDB` WHERE (Email= ? );", loginEmail).Scan(&passFromDB, &roleFromDB, &idFromDB)
 	if err != nil {
-		log.Printf("no such user")
+		log.Printf("No Such user : %s", err)
 		return "", err
 	}
 	if loginPass != passFromDB {
-		log.Printf("password is incorrect")
+		log.Printf("Password Doesnt Match")
 		return "", err
 	} else {
 		validToken, err = generateJWT(loginEmail, idFromDB, roleFromDB)
@@ -62,21 +61,23 @@ func generateJWT(email string, id ksuid.KSUID, role string) (string, error) {
 
 	tokenString, err := token.SignedString(secretkey)
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error signing String : %s\n", err.Error())
 		return "", err
 	}
-	fmt.Printf("tokenstring= %s", tokenString)
+	log.Printf("Token string Created for %s : %s\n", email, tokenString)
 	return tokenString, nil
 }
 
 func createCookie(token string, c *gin.Context) {
 	c.SetCookie("AuthenticationCookie", token, 60*60*48, "", "", false, true)
+	log.Printf("Cookie Created:\n")
+	log.Println(c.Request.Cookie("AuthenticationCookie"))
 }
 
 func isAuthorized(c *gin.Context) bool {
 	cookie, err := c.Request.Cookie("AuthenticationCookie")
 	if err != nil {
-		log.Printf("No cookie Found")
+		log.Printf("No cookie Found: %s", err)
 		return false
 	}
 	token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
@@ -86,22 +87,22 @@ func isAuthorized(c *gin.Context) bool {
 		return secretkey, nil
 	})
 	if err != nil {
-		log.Printf("cant parse Token")
+		log.Printf("Cant parse Token: %s", err)
 		return false
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		log.Printf("cant map claims ")
+		log.Printf("Cant map claims")
 		return false
 	}
 	idFromCookie, ok := claims["id"].(string)
 	if !ok {
-		log.Printf("cant claim id from Cookie")
+		log.Printf("Cant claim id from Cookie")
 		return false
 	}
 	emailFromCookie, ok := claims["email"].(string)
 	if !ok {
-		log.Printf("cant claim email from Cookie")
+		log.Printf("Cant claim email from Cookie")
 		return false
 	}
 	var idFromDb string

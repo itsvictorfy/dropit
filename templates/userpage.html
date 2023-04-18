@@ -120,56 +120,36 @@
     <li><a href="/page.html">Home</a></li>
     <li><a href="#news">News</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><button class="open-button" onclick="openForm()">Sign In</button>/li>
-  </ul>
+    <li><a href="/auth/logout">Log Out</a></li>
+
 
 <div class="container">
   <div class="jumbotron">
-    <h1>My First Bootstrap Page</h1>
-    <p>Resize this responsive page to see the effect!</p> 
+    <h1>userpage</h1>
+    <p>user page ct!</p> 
+    <form action="/apireq/search" id="searchProducts" method="post">
+      <input type="text" placeholder="Search..." name="keyword" required>
+      <button type="submit">Search</button>
+    </form>
   </div>
   <div class="row">
     <div class="col-sm-4">
       <h3>Column 1</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+      <p>Luserpage</p>
+      <p>Uuser page..</p>
     </div>
     <div class="col-sm-4">
       <h3>Column 2</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+      <p>user page .</p>
+      <p>Uuser page s...</p>
     </div>
     <div class="col-sm-4">
       <h3>Column 3</h3>        
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+      <p>user Page.</p>
+      <p>Uuser page.</p>
     </div>
   </div>
 </div>
-<div class="form-popup" id="myForm">
-  <form action="/loginver" class="form-container" method="POST">
-    <h1>Login</h1>
-
-    <label for="email"><b>Email</b></label>
-    <input type="text" placeholder="Enter Email" name="loginEmail" required>
-
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="loginPass" required>
-    <a href="/register.html">Dont have an account?</a>
-
-
-    <button type="submit" class="btn">Login</button>
-    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-
-    <script>
-      function openForm() {
-        document.getElementById("myForm").style.display = "block";
-      }
-
-      function closeForm() {
-        document.getElementById("myForm").style.display = "none";
-      }
-    </script>
 
 </body>
 </html>

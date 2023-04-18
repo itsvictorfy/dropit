@@ -353,7 +353,253 @@ type Product struct {
 	} `json:"compare_with_similar"`
 }
 
-func getNewProduct() Product {
-	var newProduct Product
-	return newProduct
+type EstimatedSales struct {
+	RequestInfo struct {
+		Success          bool `json:"success"`
+		CreditsUsed      int  `json:"credits_used"`
+		CreditsRemaining int  `json:"credits_remaining"`
+	} `json:"request_info"`
+	RequestMetadata struct {
+		ID             string    `json:"id"`
+		CreatedAt      time.Time `json:"created_at"`
+		ProcessedAt    time.Time `json:"processed_at"`
+		TotalTimeTaken float64   `json:"total_time_taken"`
+	} `json:"request_metadata"`
+	RequestParameters struct {
+		Type         string `json:"type"`
+		Asin         string `json:"asin"`
+		AmazonDomain string `json:"amazon_domain"`
+	} `json:"request_parameters"`
+	SalesEstimation struct {
+		HasSalesEstimation      bool   `json:"has_sales_estimation"`
+		MonthlySalesEstimate    int    `json:"monthly_sales_estimate"`
+		WeeklySalesEstimate     int    `json:"weekly_sales_estimate"`
+		BestsellerRank          int    `json:"bestseller_rank"`
+		SalesEstimationCategory string `json:"sales_estimation_category"`
+	} `json:"sales_estimation"`
 }
+
+type searchResult struct {
+	RequestInfo struct {
+		Success                bool `json:"success"`
+		CreditsUsed            int  `json:"credits_used"`
+		CreditsRemaining       int  `json:"credits_remaining"`
+		CreditsUsedThisRequest int  `json:"credits_used_this_request"`
+	} `json:"request_info"`
+	RequestParameters struct {
+		Type         string `json:"type"`
+		AmazonDomain string `json:"amazon_domain"`
+		SearchTerm   string `json:"search_term"`
+	} `json:"request_parameters"`
+	RequestMetadata struct {
+		CreatedAt      time.Time `json:"created_at"`
+		ProcessedAt    time.Time `json:"processed_at"`
+		TotalTimeTaken float64   `json:"total_time_taken"`
+		AmazonURL      string    `json:"amazon_url"`
+	} `json:"request_metadata"`
+	SearchResults []struct {
+		Position     int    `json:"position"`
+		Title        string `json:"title"`
+		Asin         string `json:"asin"`
+		Link         string `json:"link"`
+		Availability struct {
+			Raw string `json:"raw"`
+		} `json:"availability,omitempty"`
+		Categories []struct {
+			Name string `json:"name"`
+			ID   string `json:"id"`
+		} `json:"categories"`
+		Image        string  `json:"image"`
+		Rating       float64 `json:"rating"`
+		RatingsTotal int     `json:"ratings_total"`
+		Prices       []struct {
+			Symbol    string  `json:"symbol"`
+			Value     float64 `json:"value"`
+			Currency  string  `json:"currency"`
+			Raw       string  `json:"raw"`
+			Name      string  `json:"name"`
+			IsPrimary bool    `json:"is_primary,omitempty"`
+			Asin      string  `json:"asin,omitempty"`
+			Link      string  `json:"link,omitempty"`
+			IsRrp     bool    `json:"is_rrp,omitempty"`
+		} `json:"prices,omitempty"`
+		Price struct {
+			Symbol    string  `json:"symbol"`
+			Value     float64 `json:"value"`
+			Currency  string  `json:"currency"`
+			Raw       string  `json:"raw"`
+			Name      string  `json:"name"`
+			IsPrimary bool    `json:"is_primary"`
+			Asin      string  `json:"asin"`
+			Link      string  `json:"link"`
+		} `json:"price,omitempty"`
+	} `json:"search_results"`
+	CategoryInformation struct {
+		IsLandingPage bool `json:"is_landing_page"`
+	} `json:"category_information"`
+	RelatedSearches []struct {
+		Query string `json:"query"`
+		Link  string `json:"link"`
+	} `json:"related_searches"`
+	RelatedBrands []struct {
+		Logo      string `json:"logo"`
+		Image     string `json:"image"`
+		Title     string `json:"title"`
+		Link      string `json:"link"`
+		StoreLink string `json:"store_link"`
+		StoreID   string `json:"store_id"`
+		StoreName string `json:"store_name"`
+	} `json:"related_brands"`
+	Pagination struct {
+		TotalResults int    `json:"total_results"`
+		CurrentPage  int    `json:"current_page"`
+		NextPageLink string `json:"next_page_link"`
+		TotalPages   int    `json:"total_pages"`
+	} `json:"pagination"`
+	Refinements struct {
+		Prime []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"prime"`
+		Delivery []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"delivery"`
+		Departments []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"departments"`
+		Reviews []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"reviews"`
+		Price []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link,omitempty"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"price"`
+		Brand []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"brand"`
+		NewReleases []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"new_releases"`
+		VideoGameConsoleWirelessCommunicationTechnology []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"video_game_console_wireless_communication_technology"`
+		PackagingOption []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"packaging_option"`
+		AmazonGlobalStore []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"amazon_global_store"`
+		InternationalShipping []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"international_shipping"`
+		Condition []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"condition"`
+		Availability []struct {
+			Name                  string `json:"name"`
+			Value                 string `json:"value"`
+			Link                  string `json:"link"`
+			RefinementDisplayName string `json:"refinement_display_name"`
+		} `json:"availability"`
+	} `json:"refinements"`
+	ShoppingAdvisors []struct {
+		Position        int    `json:"position"`
+		Title           string `json:"title"`
+		Recommendations []struct {
+			Position int `json:"position"`
+			Product  struct {
+				Title        string  `json:"title"`
+				Asin         string  `json:"asin"`
+				Link         string  `json:"link"`
+				Image        string  `json:"image"`
+				Rating       float64 `json:"rating"`
+				RatingsTotal int     `json:"ratings_total"`
+				Price        struct {
+					Value    float64 `json:"value"`
+					Currency string  `json:"currency"`
+					Symbol   string  `json:"symbol"`
+					Raw      string  `json:"raw"`
+				} `json:"price"`
+			} `json:"product"`
+		} `json:"recommendations"`
+	} `json:"shopping_advisors"`
+	AdBlocks []struct {
+		CampaignID      string `json:"campaign_id"`
+		BrandLogo       string `json:"brand_logo"`
+		BackgroundImage string `json:"background_image"`
+		AdvertiserID    string `json:"advertiser_id"`
+		AdID            string `json:"ad_id"`
+		Link            string `json:"link"`
+		Title           string `json:"title"`
+		StoreLink       string `json:"store_link"`
+		StoreID         string `json:"store_id"`
+		StoreName       string `json:"store_name"`
+		Products        []struct {
+			Asin         string `json:"asin"`
+			Link         string `json:"link"`
+			Image        string `json:"image"`
+			Title        string `json:"title"`
+			IsPrime      bool   `json:"is_prime,omitempty"`
+			Rating       int    `json:"rating"`
+			RatingsTotal int    `json:"ratings_total"`
+		} `json:"products"`
+	} `json:"ad_blocks"`
+	VideoBlocks []struct {
+		VideoLink     string `json:"video_link"`
+		ThumbnailLink string `json:"thumbnail_link"`
+		CampaignID    string `json:"campaign_id"`
+		AdvertiserID  string `json:"advertiser_id"`
+		HasAudio      bool   `json:"has_audio"`
+		Products      []struct {
+			Asin         string  `json:"asin"`
+			Link         string  `json:"link"`
+			Image        string  `json:"image"`
+			Title        string  `json:"title"`
+			IsPrime      bool    `json:"is_prime"`
+			Rating       float64 `json:"rating"`
+			RatingsTotal int     `json:"ratings_total"`
+			Price        struct {
+				Value    float64 `json:"value"`
+				Currency string  `json:"currency"`
+				Symbol   string  `json:"symbol"`
+				Raw      string  `json:"raw"`
+			} `json:"price"`
+		} `json:"products"`
+	} `json:"video_blocks"`
+}
+
+var NewProduct Product

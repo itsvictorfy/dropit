@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -12,16 +13,24 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-/*
-	type product struct {
-		asin          string  `json:"asin"`
-		productTitle  string  `json:"Product Title"`
-		price         float32 `json:"price"`
-		productRating float32 `json:"productRating"`
-		sellerID      string  `json:"Seller ID"`
-		imageUrl      string  `json:"Image Url"`
-		//keywords      []string //depends on API Used Rainforest provides but Axesso doesnt
-	}*/
+type product struct { //from getProducts 24 items
+	Asin                   string
+	Title                  string
+	Link                   string
+	Price                  float64
+	Rating                 float64
+	TotalRatings           int
+	SellerID               string
+	ImageUrl               string
+	MonthlySalesEstimate   float64
+	MonthlyRevenueEstimate float64
+	TotalProducts          int
+	BestsellersRank        []struct {
+		Category string
+		Rank     int
+		Link     string
+	}
+}
 
 type user struct {
 	SecretKey    ksuid.KSUID
@@ -42,9 +51,9 @@ var usersDb *sql.DB
 // handle root directory
 func homePage(c *gin.Context) {
 	if !isAuthorized(c) {
-		c.HTML(http.StatusOK, "HomePage.html", nil)
+		c.HTML(http.StatusOK, "home_page.html", nil)
 	} else {
-		c.Redirect(http.StatusMovedPermanently, "/userpage")
+		c.Redirect(http.StatusMovedPermanently, "/auth/userpage")
 	}
 }
 func userpage(c *gin.Context) {
@@ -57,18 +66,30 @@ func userpage(c *gin.Context) {
 
 func registerPage(c *gin.Context) {
 	if !isAuthorized(c) {
-		c.HTML(http.StatusOK, "register.html", nil)
+		c.HTML(http.StatusOK, "register_page.html", nil)
 	} else {
-		c.Redirect(http.StatusMovedPermanently, "/userpage")
+		c.Redirect(http.StatusMovedPermanently, "/auth/userpage")
 	}
 }
 func logout(c *gin.Context) {
-	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false) //cant delete the fucking cookie
+	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false)
 	c.Redirect(http.StatusMovedPermanently, "/")
 }
+func testpage(c *gin.Context) {
+	c.HTML(http.StatusOK, "HomePage.html", nil)
+	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false)
+}
 
-func getCookie(c *gin.Context) {
-	fmt.Println(c.Request.Cookie("AuthenticationCookie"))
+func loginpage(c *gin.Context) {
+	c.HTML(http.StatusOK, "login_page.html", nil)
+}
+
+func basicSearch(c *gin.Context) {
+	sProducts := getProducts(searchQuery(c))
+	tmpl := template.Must(template.ParseFiles("test.html"))
+	tmpl.Execute(c.Writer, sProducts)
+	//tmpl.Execute(c.Writer, product2)
+
 }
 
 func main() {
@@ -96,27 +117,35 @@ func main() {
 	fmt.Println("Connected to:", version)
 
 	router := gin.Default()
-	router.LoadHTMLGlob("pages/*.html")
+	router.LoadHTMLGlob("templates/*.*")
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
 
-	router.GET("/", homePage)             //home page (no cookie)
-	router.GET("/logout", logout)         // handles logout (delete cookie)
-	router.GET("/userpage", userpage)     // home page ( with cookie)
-	router.POST("/regaval", register)     // handles registration
-	router.POST("/loginver", login)       //handles login
-	router.GET("/register", registerPage) //register page
-	router.GET("/cookie", getCookie)      //check cookie
+	router.GET("/", homePage)                //home page (no cookie)
+	router.GET("/login", loginpage)          //Login Page
+	router.POST("/loginauth", login_auth)    //login authentication
+	router.POST("/basicsearch", basicSearch) //basic search for any new user
+	router.GET("/test", testpage)            //testing - atm basic search
 
-	apiReq := router.Group("/apireq")
+	router.Static("/css/", "./templates/css")
+
+	reg := router.Group("/register")
 	{
-		apiReq.GET("/csv", reinforstCSV)     //using Rainforst API for spesific Amazon product data to CSV
-		apiReq.GET("/json", reinforstJSON)   //using Rainforest API for spesific Amazon Product data to JSON
-		apiReq.POST("/search", searchResult) //using Axesso API for ASIN numbers from search results by Keyboard to JSON
-		apiReq.GET("/newapi", newapi)
+		reg.POST("/newRequest", register) //handle registration in register.go
+		reg.GET("", registerPage)         //register page
+	}
+	auth := router.Group("/auth")
+	{
+		auth.GET("/userpage", userpage) // home page
+		auth.GET("/logout", logout)     // handles logout (delete cookie)
+
+		apiReq := router.Group("/apireq")
+		{
+			apiReq.POST("/search", searchNew) //unfinished
+		}
 	}
 	router.Run() // listen and serve on 0.0.0.0:8080
 }
@@ -124,8 +153,13 @@ func main() {
 /*
 IDEAS:
 -monitoring all logs with Elsatic Search and represent number of issues / requests
+-adding google trends per product / Group
+
+
+
 -Side Quest : calculate Formula 1 pottential winning round for driver if possible
 -side quest Email verefication API
+-export all datas to env vars
 
 CREATE TABLE IF NOT EXISTS dropitusersdb(
     Secret_Key VARCHAR(255) NOT NULL,
