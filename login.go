@@ -23,7 +23,7 @@ func login_auth(c *gin.Context) {
 		createCookie(token, c)
 		usersDb.Query("update DropItUsersDB set LastLogin = ?  WHERE Email = ?;", time.Now(), loginEmail)
 		log.Printf("DB Update last login for %s to %s", loginEmail, time.Now())
-		c.Redirect(http.StatusMovedPermanently, "/auth/userpage")
+		c.Redirect(http.StatusMovedPermanently, "/userpage")
 	}
 }
 

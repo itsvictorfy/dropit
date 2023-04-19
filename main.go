@@ -53,7 +53,7 @@ func homePage(c *gin.Context) {
 	if !isAuthorized(c) {
 		c.HTML(http.StatusOK, "home_page.html", nil)
 	} else {
-		c.Redirect(http.StatusMovedPermanently, "/auth/userpage")
+		c.Redirect(http.StatusMovedPermanently, "/userpage")
 	}
 }
 func userpage(c *gin.Context) {
@@ -68,16 +68,12 @@ func registerPage(c *gin.Context) {
 	if !isAuthorized(c) {
 		c.HTML(http.StatusOK, "register_page.html", nil)
 	} else {
-		c.Redirect(http.StatusMovedPermanently, "/auth/userpage")
+		c.Redirect(http.StatusMovedPermanently, "/userpage")
 	}
 }
 func logout(c *gin.Context) {
 	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false)
 	c.Redirect(http.StatusMovedPermanently, "/")
-}
-func testpage(c *gin.Context) {
-	c.HTML(http.StatusOK, "HomePage.html", nil)
-	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false)
 }
 
 func loginpage(c *gin.Context) {
@@ -124,29 +120,27 @@ func main() {
 		})
 	})
 
-	router.GET("/", homePage)                //home page (no cookie)
-	router.GET("/login", loginpage)          //Login Page
-	router.POST("/loginauth", login_auth)    //login authentication
-	router.POST("/basicsearch", basicSearch) //basic search for any new user
-	router.GET("/test", testpage)            //testing - atm basic search
+	router.GET("/", homePage)                 //Home page (no cookie)
+	router.GET("/login", loginpage)           //Login Page
+	router.GET("/register", registerPage)     //register page
+	router.GET("/userpage", userpage)         // User Home Page
+	router.POST("/basicsearch", basicSearch)  //basic search for any new user
+	router.Static("/css/", "./templates/css") //get css
 
-	router.Static("/css/", "./templates/css")
-
-	reg := router.Group("/register")
+	auth := router.Group("/auth") //all authentication and registretion
 	{
-		reg.POST("/newRequest", register) //handle registration in register.go
-		reg.GET("", registerPage)         //register page
-	}
-	auth := router.Group("/auth")
-	{
-		auth.GET("/userpage", userpage) // home page
+		auth.POST("/login", login_auth) //handle Login
 		auth.GET("/logout", logout)     // handles logout (delete cookie)
-
-		apiReq := router.Group("/apireq")
+		reg := router.Group("/reg")
 		{
-			apiReq.POST("/search", searchNew) //unfinished
+			reg.POST("/newrequest", register) //handle registration in register.go
 		}
 	}
+	apiReq := router.Group("/apireq")
+	{
+		apiReq.POST("/search", searchNew) //unfinished
+	}
+
 	router.Run() // listen and serve on 0.0.0.0:8080
 }
 

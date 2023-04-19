@@ -30,14 +30,13 @@
       <div class="limiter">
         <div class="container-login100">
           <div class="wrap-login100">
-            <form class="login100-form validate-form">
               <h1>Welcome</h1>
               <span class="login100-form-title p-b-48">
                 <i class="zmdi zmdi-font"></i>
               </span>
-              <form action="/loginauth" class="form-container" method="POST">
+              <form action="/auth/login" class="form-container" method="POST">
               </form>
-              <form action="/loginauth" class="form-container" method="POST">
+              <form action="/auth/login" class="form-container" method="POST">
                 <h1>Login</h1>
                 <input class="input100" type="text" name="login_email" placeholder="Email">
                 <input class="input100" type="password" name="login_password" placeholder="Password">
@@ -47,12 +46,12 @@
                     <div class="login100-form-bgbtn"></div>
                     <button class="login100-form-btn" type="submit" >Login</button>
                   </div>
-                </div>            </form>
+                </div>
+              </form>
               <div class="text-center p-t-115">
                   <p>Don’t have an account?</p>
                 <a class="txt2" href="/register">Sign Up</a>
               </div>
-            </form>
           </div>
         </div>
       </div>
