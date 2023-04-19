@@ -27,5 +27,3 @@ jobs:
       run: docker build . --file db.dockerfile --tag itsvictorfy/dropitusersdb:latest
     - name: Push DropIT_Users_DB Docker Image
       run: docker push itsvictorfy/dropitusersdb
-    - name: Login to AWS rep
-      run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 789559792195.dkr.ecr.us-east-1.amazonaws.com
