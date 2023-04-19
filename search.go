@@ -78,6 +78,8 @@ func getProducts(url string) product {
 		prod.TotalRatings = searchReq.SearchResults[i].RatingsTotal
 		prod.Title = searchReq.SearchResults[i].Title
 		searchProducts = append(searchProducts, prod)
+		cachedProd, _ := json.Marshal(prod)
+		productCache.Set(prod.Asin, cachedProd, 5)
 	}
 	fmt.Println(searchProducts)
 	return searchProducts[1]

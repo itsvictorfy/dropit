@@ -27,3 +27,7 @@ jobs:
       run: docker build . --file db.dockerfile --tag itsvictorfy/dropitusersdb:latest
     - name: Push DropIT_Users_DB Docker Image
       run: docker push itsvictorfy/dropitusersdb
+    - name: Build Docker Compose
+      run: docker compose build
+    - name: Push Docker Compose
+      run: docker compose push

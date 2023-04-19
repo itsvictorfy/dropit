@@ -52,6 +52,6 @@ func insertToDB(p user) error {
 		log.Printf("Error %s when finding rows affected", err)
 		return err
 	}
-	log.Printf("%d products created ", rows)
+	log.Printf("%d User created ", rows)
 	return nil
 }

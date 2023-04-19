@@ -9,27 +9,27 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	"github.com/go-sql-driver/mysql"
 	"github.com/segmentio/ksuid"
 )
 
 type product struct { //from getProducts 24 items
-	Asin                   string
-	Title                  string
-	Link                   string
-	Price                  float64
-	Rating                 float64
-	TotalRatings           int
-	SellerID               string
-	ImageUrl               string
-	MonthlySalesEstimate   float64
-	MonthlyRevenueEstimate float64
-	TotalProducts          int
+	Asin                   string  `json:"Asin"`
+	Title                  string  `json:"Title"`
+	Link                   string  `json:"Link"`
+	Price                  float64 `json:"Price"`
+	Rating                 float64 `json:"rating"`
+	TotalRatings           int     `json:"TotalRating"`
+	SellerID               string  `json:"SellerID"`
+	ImageUrl               string  `json:"ImgaeURL"`
+	MonthlySalesEstimate   float64 `json:"MonthlySalesEstimate"`
+	MonthlyRevenueEstimate float64 `json:"MonthlyRevenueEstimate"`
 	BestsellersRank        []struct {
-		Category string
-		Rank     int
-		Link     string
-	}
+		Category string `json:"bestsellers_Category"`
+		Rank     int    `json:"bestsellers_rank"`
+		Link     string `json:"bestsellers_Link"`
+	} `json:"bestsellers_rank"`
 }
 
 type user struct {
@@ -47,6 +47,7 @@ type user struct {
 
 var secretkey = []byte("whatsecretkeywedonthaveasecretkey")
 var usersDb *sql.DB
+var productCache *redis.Client
 
 // handle root directory
 func homePage(c *gin.Context) {
@@ -93,7 +94,7 @@ func main() {
 		User:                 "root",
 		Passwd:               "admin",
 		Net:                  "tcp",
-		Addr:                 "userDB",
+		Addr:                 "dropit_users_DB",
 		DBName:               "userdDB",
 		AllowNativePasswords: true,
 	}
@@ -111,6 +112,17 @@ func main() {
 	var version string
 	usersDb.QueryRow("SELECT VERSION()").Scan(&version)
 	fmt.Println("Connected to:", version)
+
+	productCache = redis.NewClient(&redis.Options{
+		Addr:     "dropit_prod_cache:6379",
+		Password: "",
+		DB:       0,
+	})
+	pong, err := productCache.Ping().Result()
+	if err != nil {
+		log.Fatalf("Pong: %s, Err: %v", pong, err)
+	}
+	log.Printf("Connected to DB): %s", pong)
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.*")
@@ -154,17 +166,4 @@ IDEAS:
 -Side Quest : calculate Formula 1 pottential winning round for driver if possible
 -side quest Email verefication API
 -export all datas to env vars
-
-CREATE TABLE IF NOT EXISTS dropitusersdb(
-    Secret_Key VARCHAR(255) NOT NULL,
-	URole VARCHAR(255) NOT NULL,
-	Email VARCHAR (255) NOT NULL,
-	Passw VARCHAR (255) NOT NULL,
-	First_Name VARCHAR (255) NOT NULL,
-	Last_Name VARCHAR (255) NOT NULL,
-	LastSearch VARCHAR (255) NULL,
-	LastLogin DATE NULL,
-	Is_Verified BOOLEAN NOT NULL,
-	Creation_Date DATE NOT NULL
-) COMMENT '';
 */
