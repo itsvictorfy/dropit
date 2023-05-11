@@ -11,4 +11,4 @@ CREATE TABLE IF NOT EXISTS DropItUsersDB(
 	Is_Verified BOOLEAN NOT NULL,
 	Creation_Date DATE NOT NULL
 ) COMMENT '';
-INSERT INTO DropItUsersDB(Email, First_Name,Last_Name,PassW, Secret_Key,URole, Creation_Date, Is_Verified ) VALUES ("admin@dropit.com", "Admin","Admin","Admin", "2OdWmGmZucr2JBJllnviBQl5IPw", "Admin", "2023-04-19", FALSE )
+INSERT INTO IF NOT EXISTS DropItUsersDB(Email, First_Name,Last_Name,PassW, Secret_Key,URole, Creation_Date, Is_Verified ) VALUES ("admin@dropit.com", "Admin","Admin","Admin", "2OdWmGmZucr2JBJllnviBQl5IPw", "Admin", "2023-04-19", FALSE )

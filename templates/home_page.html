@@ -26,7 +26,6 @@
       <a data-scroll="pricing" href="#pricing"> Pricing </a>
       <a data-scroll="account" href="/login"> Login </a>
       <a data-scroll="account" href="/register"> Signup </a>
-      
     </nav>
 
     <section id="home" class="section">
@@ -50,8 +49,9 @@
           <div class="content">
             <h1>Try it Yourself </h1>
             <div class="box">
-              <form name="basic_search_requset">
-                  <input type="text" class="input200" name="txt" onmouseout="this.value = ''; this.blur();">
+              <form name="basic_search_requset" action="/fsearch" method="POST">
+                  <input type="text" class="input200" name="keyword">
+                  <button type="submit" class="btn">Learn More</button>
               </form>
               <i class="fas fa-search"></i>
           </div>

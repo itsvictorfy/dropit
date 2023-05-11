@@ -1,0 +1,21 @@
+api := router.Group("/api/")
+	{
+		api.GET("/health", health)
+		api.GET("/get", getMaintenance)
+		api.GET("/get-raw", getMaintenance)
+		//api.POST("/set/:in/*length", setMaintenanceNow)
+		api.POST("/set", setMaintenance)
+		api.POST("/reset", resetMaintenance)
+		//tenant based processing
+		api.GET("/get/:tenant", getMaintenance)
+		api.POST("/set/:tenant/:in/*length", setMaintenanceNow)
+		api.POST("/set/:tenant", setMaintenance)
+		api.POST("/reset/:tenant", resetMaintenance)
+	}
+	func setMaintenanceNow(c *gin.Context) {
+		IsItScheduled = IsItScheduled.Now(c.Param("in"), c.Param("length"))
+	
+		processMaintenance("set", c.Param("tenant"))
+	
+		c.IndentedJSON(http.StatusOK, IsItScheduled)
+	}

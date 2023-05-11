@@ -14,6 +14,12 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
+type bsr struct {
+	Category string `json:"bestsellers_Category"`
+	Rank     string `json:"bestsellers_rank"`
+	Link     string `json:"bestsellers_Link"`
+}
+
 type product struct { //from getProducts 24 items
 	Asin                   string  `json:"Asin"`
 	Title                  string  `json:"Title"`
@@ -25,11 +31,7 @@ type product struct { //from getProducts 24 items
 	ImageUrl               string  `json:"ImgaeURL"`
 	MonthlySalesEstimate   float64 `json:"MonthlySalesEstimate"`
 	MonthlyRevenueEstimate float64 `json:"MonthlyRevenueEstimate"`
-	BestsellersRank        []struct {
-		Category string `json:"bestsellers_Category"`
-		Rank     int    `json:"bestsellers_rank"`
-		Link     string `json:"bestsellers_Link"`
-	} `json:"bestsellers_rank"`
+	BestsellersRank        []bsr   `json:"bestsellers_rank"`
 }
 
 type user struct {
@@ -45,9 +47,17 @@ type user struct {
 	CreationDate time.Time `json:"Created "`
 }
 
+type keywordAsins struct {
+	Keyword string   `json:"keyword"`
+	Asins   []string `json:"asins"`
+}
+
 var secretkey = []byte("whatsecretkeywedonthaveasecretkey")
+
+// var googlekey := "AIzaSyAo9yLA6tPkzuvFdBHu-ySnccv-y5IVIc0"
 var usersDb *sql.DB
 var productCache *redis.Client
+var keywordCache *redis.Client
 
 // handle root directory
 func homePage(c *gin.Context) {
@@ -73,7 +83,7 @@ func registerPage(c *gin.Context) {
 	}
 }
 func logout(c *gin.Context) {
-	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, false)
+	c.SetCookie("AuthenticationCookie", "expired", -1, "", "", false, true)
 	c.Redirect(http.StatusMovedPermanently, "/")
 }
 
@@ -83,18 +93,21 @@ func loginpage(c *gin.Context) {
 
 func basicSearch(c *gin.Context) {
 	sProducts := getProducts(searchQuery(c))
-	tmpl := template.Must(template.ParseFiles("test.html"))
-	tmpl.Execute(c.Writer, sProducts)
-	//tmpl.Execute(c.Writer, product2)
-
+	tmpl := template.Must(template.ParseFiles("./templates/search_result.html"))
+	err := tmpl.Execute(c.Writer, sProducts)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// //c.JSON(http.StatusOK, sProducts)
 }
 
 func main() {
 	cfg := mysql.Config{
-		User:                 "root",
-		Passwd:               "admin",
-		Net:                  "tcp",
-		Addr:                 "dropit_users_DB",
+		User:   "root",
+		Passwd: "admin",
+		Net:    "tcp",
+		Addr:   "dropit_users_DB",
+		//Addr:                 "127.0.0.1:3306",
 		DBName:               "userdDB",
 		AllowNativePasswords: true,
 	}
@@ -114,7 +127,8 @@ func main() {
 	fmt.Println("Connected to:", version)
 
 	productCache = redis.NewClient(&redis.Options{
-		Addr:     "dropit_prod_cache:6379",
+		Addr: "dropit_prod_cache:6379",
+		// Addr:     "127.0.0.1:6379",
 		Password: "",
 		DB:       0,
 	})
@@ -122,8 +136,19 @@ func main() {
 	if err != nil {
 		log.Fatalf("Pong: %s, Err: %v", pong, err)
 	}
-	log.Printf("Connected to DB): %s", pong)
+	log.Printf("Connected to DB1): %s", pong)
 
+	keywordCache = redis.NewClient(&redis.Options{
+		Addr: "dropit_prod_cache:6379",
+		//Addr:     "127.0.0.1:6379",
+		Password: "",
+		DB:       1,
+	})
+	pong1, err := keywordCache.Ping().Result()
+	if err != nil {
+		log.Fatalf("Pong: %s, Err: %v", pong1, err)
+	}
+	log.Printf("Connected to DB1): %s", pong1)
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.*")
 	router.GET("/ping", func(c *gin.Context) {
@@ -136,7 +161,7 @@ func main() {
 	router.GET("/login", loginpage)           //Login Page
 	router.GET("/register", registerPage)     //register page
 	router.GET("/userpage", userpage)         // User Home Page
-	router.POST("/basicsearch", basicSearch)  //basic search for any new user
+	router.POST("/fsearch", basicSearch)      //basic search for any user
 	router.Static("/css/", "./templates/css") //get css
 
 	auth := router.Group("/auth") //all authentication and registretion
@@ -163,6 +188,7 @@ IDEAS:
 
 
 
+//text to speach plugin for chrome
 -Side Quest : calculate Formula 1 pottential winning round for driver if possible
 -side quest Email verefication API
 -export all datas to env vars

@@ -26,7 +26,7 @@ func register(c *gin.Context) {
 	if err != nil {
 		c.Redirect(http.StatusMovedPermanently, "/register")
 	} else {
-		c.Redirect(http.StatusMovedPermanently, "/auth/userpage")
+		c.Redirect(http.StatusMovedPermanently, "/userpage")
 
 	}
 
