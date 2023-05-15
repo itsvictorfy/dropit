@@ -1,8 +1,9 @@
+version: '3'
 services:
   mariadb:
     image: mariadb
     container_name: dropit_users_DB
-    build: 
+    build:
       dockerfile: db.dockerfile
     environment:
       MARIADB_ROOT_PASSWORD: admin
@@ -12,14 +13,13 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./DataBases:/docker-entrypoint-initdb.d
+      - shared-data:/data/mariadb
     healthcheck:
       test: mysqladmin -padmin ping -h localhost
       interval: 20s
       start_period: 10s
       timeout: 10s
       retries: 3
-    
 
   dropit:
     image: dropit:latest
@@ -27,7 +27,7 @@ services:
     restart: always
     build:
       dockerfile: Dockerfile
-    links: 
+    links:
       - "mariadb:userdDB"
     depends_on:
       mariadb:
@@ -36,14 +36,21 @@ services:
         condition: service_healthy
     ports:
       - 8080:8080
-
+    volumes:
+      - shared-data:/data/dropit
+    environment:
+      CONTAINER_NAME: dropit
 
   redis:
     image: redis:latest
     container_name: dropit_prod_cache
     restart: always
     ports:
-        - '6379:6379'
+      - '6379:6379'
+    volumes:
+      - shared-data:/data/redis
     healthcheck:
-      test: ["CMD", "redis-cli","ping"]
-   
+      test: ["CMD", "redis-cli", "ping"]
+
+volumes:
+  shared-data:
