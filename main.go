@@ -183,7 +183,7 @@ func main() {
 
 /*
 IDEAS:
--monitoring all logs with Elsatic Search and represent number of issues / requests
+-monitoring all logs with Elsatic Search and represent number of issues / requests Prometheus
 -adding google trends per product / Group
 
 

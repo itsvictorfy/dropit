@@ -1,7 +1,6 @@
 version: '3'
 services:
   mariadb:
-    image: mariadb
     container_name: dropit_users_DB
     build:
       dockerfile: db.dockerfile
@@ -20,9 +19,11 @@ services:
       start_period: 10s
       timeout: 10s
       retries: 3
+    networks:
+      vnet:
+        ipv4_address: 172.24.0.4
 
   dropit:
-    image: dropit:latest
     container_name: dropit_app
     restart: always
     build:
@@ -40,6 +41,9 @@ services:
       - shared-data:/data/dropit
     environment:
       CONTAINER_NAME: dropit
+    networks:
+      vnet:
+        ipv4_address: 172.24.0.5
 
   redis:
     image: redis:latest
@@ -51,6 +55,73 @@ services:
       - shared-data:/data/redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
+    networks:
+      vnet:
+        ipv4_address: 172.24.0.6
+    
+  # redis_exporter:
+  #   image: oliver006/redis_exporter
+  #   container_name: dropit_redis_export
+  #   depends_on:
+  #     - redis
+  #   expose:
+  #     - 9121
+  
+  # mysql_exporter:
+  #   image: prom/mysqld-exporter
+  #   container_name: dropit_mysql_export
+  #   ports:
+  #     - 9104:9104
+  #   links:
+  #     - mariadb
+  #   depends_on:
+  #     - mariadb
+  #   environment:
+  #     - DATA_SOURCE_NAME='exporter:exporterpass@(localhost:3306)/'
+  
+  prometheus:
+    container_name: dropit_promotheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/recording_rules.yaml:/etc/prometheus/recording_rules.yaml
+    ports:
+      - 9090:9090
+    networks:
+      vnet:
+        ipv4_address: 172.24.0.7
+    
+  grafana:
+    build:
+      dockerfile: grafana.dockerfile
+    container_name: dropit_grafana
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml
+    ports:
+      - 3000:3000
+    links:
+      - prometheus
+    networks:
+      vnet:
+        ipv4_address: 172.24.0.8
+    
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: monitoring_node_explorer
+    restart: unless-stopped
+    expose:
+      - 9100
+    networks:
+      vnet:
+        ipv4_address: 172.24.0.9
 
 volumes:
   shared-data:
+
+networks:
+  vnet:
+    ipam: 
+      driver: default
+      config:
+        - subnet: 172.24.0.0/24

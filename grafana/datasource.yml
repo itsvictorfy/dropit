@@ -1,0 +1,34 @@
+apiVersion: 1
+datasources:
+- name: Prometheus
+  type: prometheus
+  url: http://localhost:9090 
+  isDefault: false
+  access: direct
+  editable: true
+- name: MySQL
+  type: mysql
+  url: 172.23.0.4:3306
+  user: root
+  database: userdDB
+  jsonData:
+    maxOpenConns: 100 # Grafana v5.4+
+    maxIdleConns: 100 # Grafana v5.4+
+    maxIdleConnsAuto: true # Grafana v9.5.1+
+    connMaxLifetime: 14400 # Grafana v5.4+
+  secureJsonData:
+    password: admin
+- name: Redis
+  type: redis-datasource
+  access: proxy
+  orgId: 1
+  isDefault: true
+  version: 1
+  url: redis://host.docker.internal:6379
+  jsonData:
+    client: standalone
+    poolSize: 5
+    timeout: 10
+    pingInterval: 0
+    pipelineWindow: 0
+  editable: true
