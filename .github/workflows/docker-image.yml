@@ -7,11 +7,14 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
+  push_to_registries:
+    name: Push Docker image to multiple registries
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     steps:
     - uses: actions/checkout@v3
     - name: Docker Login
@@ -19,11 +22,25 @@ jobs:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
         DOCKER_PASS: ${{secrets.DOCKER_PASS}}
       run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+    - name: Log in to the Container registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GIT_TOKEN }}
+
     - name: Build DropIT_App Docker image
       run: docker build . --tag itsvictorfy/dropit:latest
+
     - name: Push DropIT_App Docker Image 
       run: docker push itsvictorfy/dropit
-    - name: Build DropIT_Users_DB Docker image
-      run: docker build . --file db.dockerfile --tag itsvictorfy/dropitusersdb:latest
-    - name: Push DropIT_Users_DB Docker Image
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with:
+        images: |
+          itsvictorfy/dropit
+          ghcr.io/${{ github.repository }}
+    - 
+      name: Push DropIT_Users_DB Docker Image
       run: docker push itsvictorfy/dropitusersdb
