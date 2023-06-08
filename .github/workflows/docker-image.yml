@@ -27,9 +27,3 @@ jobs:
       run: docker build . --file db.dockerfile --tag itsvictorfy/dropitusersdb:latest
     - name: Push DropIT_Users_DB Docker Image
       run: docker push itsvictorfy/dropitusersdb
-    - name: login to git redistry
-      env:
-        CP_PAT: ${{secrets.DOCKER_REGISTRY_AT}}
-      run: echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
-    - name: Push DropIT_Users_DB Docker Image
-      run: docker push ghcr.io/itsvitorfy/dropit:latest
