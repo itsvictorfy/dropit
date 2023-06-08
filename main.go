@@ -92,11 +92,11 @@ func loginpage(c *gin.Context) {
 }
 
 func basicSearch(c *gin.Context) {
-	sProducts := getProducts(searchQuery(c))
+	sProducts := getProdListFromApi(searchQuery(c))
 	tmpl := template.Must(template.ParseFiles("./templates/search_result.html"))
 	err := tmpl.Execute(c.Writer, sProducts)
 	if err != nil {
-		log.Fatal(err)
+		c.Redirect(http.StatusMovedPermanently, "/")
 	}
 	// //c.JSON(http.StatusOK, sProducts)
 }
@@ -134,7 +134,7 @@ func main() {
 	})
 	pong, err := productCache.Ping().Result()
 	if err != nil {
-		log.Fatalf("Pong: %s, Err: %v", pong, err)
+		fmt.Printf("Pong: %s, Err: %v", pong, err)
 	}
 	log.Printf("Connected to DB1): %s", pong)
 
@@ -146,7 +146,7 @@ func main() {
 	})
 	pong1, err := keywordCache.Ping().Result()
 	if err != nil {
-		log.Fatalf("Pong: %s, Err: %v", pong1, err)
+		fmt.Printf("Pong: %s, Err: %v", pong1, err)
 	}
 	log.Printf("Connected to DB1): %s", pong1)
 	router := gin.Default()
@@ -175,7 +175,7 @@ func main() {
 	}
 	apiReq := router.Group("/apireq")
 	{
-		apiReq.POST("/search", searchNew) //unfinished
+		apiReq.POST("/search", homePage) //unfinished
 	}
 
 	router.Run() // listen and serve on 0.0.0.0:8080

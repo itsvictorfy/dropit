@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dropit-app-deployment
+  labels:
+    app: dropit-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dropit-app
+  template:
+    metadata:
+      labels:
+        app: dropit-app
+    spec:
+      containers:
+      - name: dropit
+        image: gcr.io/dropit-385011/github.com/itsvictorfy/dropit@sha256:545746a7b664007d6eb0f583d7ac48fbdeee148b8df0f0365b17b9c91e05c356
+        ports:
+        - containerPort: 8080

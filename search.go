@@ -12,16 +12,15 @@ import (
 
 //var SProducts []product
 
-func searchNew(c *gin.Context) {
+/*func searchNew(c *gin.Context) {
 	var sProducts []product
-	//getProducts(searchQuery(c))
-	//if (i can get estimated sales)
+	sProducts = getProdListFromApi()
 	for i, prod := range sProducts {
 		sProducts[i].MonthlySalesEstimate = getEstimatedsales(editQuery(prod))
 		sProducts[i].MonthlyRevenueEstimate = sProducts[i].MonthlySalesEstimate * sProducts[i].Price
 	}
 
-}
+}*/
 
 // sales estimation per ASIN
 func getEstimatedsales(url string) float64 {
@@ -90,7 +89,7 @@ func getProdListFromApi(url, keyword string) []product {
 	asinlist.Keyword = keyword
 	for i := 0; i < len(searchReq.SearchResults); i++ {
 		var prod product
-		url1 := "https://www.amazon.com/dp/" + searchReq.SearchResults[i].Asin
+		//url1 := "https://www.amazon.com/dp/" + searchReq.SearchResults[i].Asin
 		prod.Asin = searchReq.SearchResults[i].Asin
 		prod.ImageUrl = searchReq.SearchResults[i].Image
 		prod.Link = searchReq.SearchResults[i].Link
@@ -98,7 +97,8 @@ func getProdListFromApi(url, keyword string) []product {
 		prod.Rating = searchReq.SearchResults[i].Rating
 		prod.TotalRatings = searchReq.SearchResults[i].RatingsTotal
 		prod.Title = searchReq.SearchResults[i].Title
-		prod.BestsellersRank = getBsr(url1)
+		prod.MonthlySalesEstimate = getEstimatedsales(editQuery(prod))
+		//prod.BestsellersRank = getBsr(url1)
 		searchProducts = append(searchProducts, prod)
 		asinlist.Asins = append(asinlist.Asins, prod.Asin)
 		cachedProd, _ := json.Marshal(prod)
@@ -141,7 +141,7 @@ func getProdListFromDB(keyword string) []product {
 
 // edit Api Query to get Estimated sales data per product
 func editQuery(prod product) string {
-	url, err := url.Parse("https://api.rainforestapi.com/request?api_key=63FFD605C840421D9F5FC4433C106F90&type=sales_estimation&amazon_domain=amazon.com&asin=B07GY4DS42&output=json")
+	url, err := url.Parse("https://api.rainforestapi.com/request?api_key=43BBBEBB52D3470598EFDC8F16AA6B60&type=sales_estimation&amazon_domain=amazon.com&asin=B07GY4DS42&output=json")
 	if err != nil {
 		log.Printf("error")
 	}
