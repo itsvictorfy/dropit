@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dropit
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  - name: mysql
+    port: 3306
+    targetPort: 3306
+  - name: grafana
+    port: 3000
+    targetPort: 3000
+  - name: prom
+    port: 9090
+    targetPort: 9090
+  selector:
+    name: dropit

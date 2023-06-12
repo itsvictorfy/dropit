@@ -58,26 +58,6 @@ services:
     networks:
       vnet:
         ipv4_address: 172.24.0.6
-    
-  # redis_exporter:
-  #   image: oliver006/redis_exporter
-  #   container_name: dropit_redis_export
-  #   depends_on:
-  #     - redis
-  #   expose:
-  #     - 9121
-  
-  # mysql_exporter:
-  #   image: prom/mysqld-exporter
-  #   container_name: dropit_mysql_export
-  #   ports:
-  #     - 9104:9104
-  #   links:
-  #     - mariadb
-  #   depends_on:
-  #     - mariadb
-  #   environment:
-  #     - DATA_SOURCE_NAME='exporter:exporterpass@(localhost:3306)/'
   
   prometheus:
     container_name: dropit_promotheus

@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dropit-app-deployment
+  name: dropit
   labels:
-    app: dropit-app
+    app: dropit
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: dropit-app
+      app: dropit
   template:
     metadata:
       labels:
-        app: dropit-app
+        app: dropit
     spec:
       containers:
       - name: dropit
-        image: docker.io/itsvictorfy/dropit:latest
+        image: itsvictorfy/dropit:latest
         ports:
         - containerPort: 8080

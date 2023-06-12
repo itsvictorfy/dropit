@@ -1,4 +1,6 @@
 -- Active: 1674940169637@@127.0.0.1@3306@userdDB
+CREATE DATABASE userdDB;
+USE userdDB;
 CREATE TABLE IF NOT EXISTS DropItUsersDB(
     Secret_Key VARCHAR(255) NOT NULL,
 	URole VARCHAR(255) NOT NULL,
@@ -12,8 +14,3 @@ CREATE TABLE IF NOT EXISTS DropItUsersDB(
 	Creation_Date DATE NOT NULL
 ) COMMENT '';
 INSERT INTO IF NOT EXISTS DropItUsersDB(Email, First_Name,Last_Name,PassW, Secret_Key,URole, Creation_Date, Is_Verified ) VALUES ("admin@dropit.com", "Admin","Admin","Admin", "2OdWmGmZucr2JBJllnviBQl5IPw", "Admin", "2023-04-19", FALSE )
-
-CREATE USER 'mysqld_exporter'@'localhost' IDENTIFIED BY 'admin';
-GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'mysqld_exporter'@'localhost';
-GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 
-FLUSH PRIVILEGES;
