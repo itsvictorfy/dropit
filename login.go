@@ -106,7 +106,7 @@ func isAuthorized(c *gin.Context) bool {
 		return false
 	}
 	var idFromDb string
-	errs := usersDb.QueryRow("SELECT Secret_Key FROM `DropItUsersDB` WHERE (Email= ? );", emailFromCookie).Scan(&idFromDb)
+	errs := usersDb.QueryRow("SELECT Secret_Key FROM `users` WHERE (Email= ? );", emailFromCookie).Scan(&idFromDb)
 	if errs != nil {
 		log.Printf("error getting DB Data")
 		return false

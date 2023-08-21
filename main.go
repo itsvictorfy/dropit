@@ -108,7 +108,7 @@ func main() {
 		Net:    "tcp",
 		Addr:   "dropit_users_DB",
 		//Addr:                 "127.0.0.1:3306",
-		DBName:               "userdDB",
+		DBName:               "userDB",
 		AllowNativePasswords: true,
 	}
 	var err error

@@ -1,3 +1,41 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
+  clusterIP: None
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,9 +53,15 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: itsvictorfy/dropitusersdb:latest
+        image: itsvictorfy/dropitusersdb:fork8s
         env:
         - name: MARIADB_ROOT_PASSWORD
+          value: admin
+        # - name: MARIADB_DATABASE
+        #   value: userdDB
+        - name: MARIADB_USER
+          value: admin
+        - name: MARIADB_PASSWORD
           value: admin
         ports:
         - name: mysql 

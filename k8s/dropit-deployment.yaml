@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dropit-app
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,7 +10,7 @@ metadata:
   labels:
     app: dropit
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: dropit
@@ -19,3 +24,25 @@ spec:
         image: itsvictorfy/dropit:latest
         ports:
         - containerPort: 8080
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500Mi"
+          limits:
+            memory: "2Gi"
+            cpu: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dropit
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  selector:
+    name: dropit
+---
+

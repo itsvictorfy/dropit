@@ -72,9 +72,9 @@ services:
         ipv4_address: 172.24.0.7
     
   grafana:
-    build:
-      dockerfile: grafana.dockerfile
     container_name: dropit_grafana
+    image: grafana/grafana:7.5.17
+    command: ["grafana-cli", "plugins", "install", "redis-datasource"]
     volumes:
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml
